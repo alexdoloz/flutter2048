@@ -1,8 +1,16 @@
+import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:p2048/game_grid.dart';
+import 'package:p2048/game_logic.dart';
 
 void main() {
   runApp(MyApp());
+  game.startNewGame();
+  print(game.grid);
 }
+
+var game = GameLogic();
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -27,6 +35,10 @@ class MyApp extends StatelessWidget {
   }
 }
 
+
+
+
+
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key, required this.title}) : super(key: key);
 
@@ -46,19 +58,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -74,40 +73,157 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+        child: Center(
+          child: GameFieldWidget(),
+        )
+      ), 
     );
   }
 }
+
+class GameFieldWidget extends StatefulWidget {
+  const GameFieldWidget({ Key? key }) : super(key: key);
+
+  @override
+  _GameFieldWidgetState createState() => _GameFieldWidgetState();
+}
+
+class _GameFieldWidgetState extends State<GameFieldWidget> {
+  var logic = GameLogic();
+  static const cellSide = 80.0;
+  static const spacing = 8.0;
+
+  @override
+  void initState() {
+    super.initState();
+    logic.startNewGame();
+  } 
+
+  Widget _row(int index) {
+    final row = logic.grid.row(index);
+    return Row(
+      children: 4.map((x) => GameTile(row[x])),
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisSize: MainAxisSize.max,
+    );
+  }
+
+  List<Widget> _rows() => 4.map((y) => _row(y));
+
+  @override
+  Widget build(BuildContext context) {
+    final side = 4 * cellSide + 5 * spacing;
+    final gameColor = Color(0xffbbada0);
+    final borderSide = BorderSide(
+      color: gameColor, 
+      style: BorderStyle.solid,
+      width: spacing,
+    );
+    final border = Border.fromBorderSide(borderSide);
+    return GestureDetector(
+      onHorizontalDragEnd: (info) {
+        if (info.primaryVelocity == null) return;
+        var velocity = info.primaryVelocity ?? 0;
+        var direction = velocity > 0 ? MoveDirection.right : MoveDirection.left;
+        setState(() {
+          logic.move(direction);
+        });
+      },
+      onVerticalDragEnd: (info) {
+      if (info.primaryVelocity == null) return;
+        var velocity = info.primaryVelocity ?? 0;
+        var direction = velocity > 0 ? MoveDirection.down : MoveDirection.up;
+        setState(() {
+          logic.move(direction);
+        });
+      },
+      
+      child: SizedBox(
+        width: side,
+        height: side,
+        child: Container(
+          decoration: BoxDecoration(
+            border: border,
+            borderRadius: BorderRadius.circular(5.0),
+            color: gameColor,
+          ),
+          child: Column(
+            children: _rows(),
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.max,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class GameTile extends StatelessWidget {
+  final int power;
+
+  static List<Color> colors = [
+    Color.fromARGB(89, 238, 228, 218), 
+    Color(0xffeee4da), 
+    Color(0xffede0c8),
+    Colors.orange, // TODO: Заменить на настоящие цвета
+    Colors.purple, Colors.red, Colors.deepOrange, Colors.blue,
+    Colors.teal, Colors.cyan, Colors.black, Colors.lime
+  ];
+
+  GameTile(this.power);
+
+  @override
+  Widget build(BuildContext context) {
+    final text = '${pow(2, power)}';
+    var textWidget = Text(
+      text,
+      style: TextStyle(fontSize: 25.0 - text.length, color: Colors.white),
+    );
+    return Container(
+      width: 80,
+      height: 80, 
+      color: GameTile.colors[power], 
+      alignment: Alignment.center, 
+      child: power == 0 ? null : textWidget,
+    );
+  }
+}
+/*
+Column(
+          children: [
+            ElevatedButton(
+              onPressed: () { 
+                game.move(MoveDirection.up);
+                print(game.grid);  
+              },
+              child: Text('up'),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () { 
+                game.move(MoveDirection.down);
+                print(game.grid);  
+              },
+              child: Text('down'),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () { 
+                game.move(MoveDirection.left);
+                print(game.grid);  
+              },
+              child: Text('left'),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () { 
+                game.move(MoveDirection.right);
+                print(game.grid);  
+              },
+              child: Text('right'),
+            ),
+          ],
+          
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+        ),*/
