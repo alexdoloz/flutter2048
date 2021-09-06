@@ -35,10 +35,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
-
-
-
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key, required this.title}) : super(key: key);
 
@@ -74,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: Center(
-          child: GameFieldWidget(),
+          child: GameField2(),
         )
       ), 
     );
@@ -159,6 +155,7 @@ class _GameFieldWidgetState extends State<GameFieldWidget> {
 }
 
 class GameTile extends StatelessWidget {
+  static const tileSize = 80.0;
   final int power;
 
   static List<Color> colors = [
@@ -171,6 +168,7 @@ class GameTile extends StatelessWidget {
   ];
 
   GameTile(this.power);
+  GameTile.empty() : power = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -180,9 +178,19 @@ class GameTile extends StatelessWidget {
       style: TextStyle(fontSize: 25.0 - text.length, color: Colors.white),
     );
     return Container(
-      width: 80,
-      height: 80, 
-      color: GameTile.colors[power], 
+      decoration: BoxDecoration(
+        border: Border.fromBorderSide(
+          BorderSide(
+            color: Colors.transparent,
+            style: BorderStyle.solid,
+            width: 0.0,
+          )
+        ),
+        borderRadius: BorderRadius.circular(5.0),
+        color: GameTile.colors[power],
+      ),
+      width: tileSize,
+      height: tileSize,
       alignment: Alignment.center, 
       child: power == 0 ? null : textWidget,
     );
@@ -227,3 +235,88 @@ Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
         ),*/
+
+class GameField2 extends StatefulWidget {
+  const GameField2({ Key? key }) : super(key: key);
+
+  @override
+  _GameField2State createState() => _GameField2State();
+}
+
+class _GameField2State 
+extends State<GameField2>
+with SingleTickerProviderStateMixin {
+  late Animation<double> animation;
+  late AnimationController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+    animation = Tween<double>(begin: 80+16, end: 240+32).animate(controller)
+      ..addListener(() {
+        setState(() {});
+      });
+    controller.forward();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: AlignmentDirectional.center,
+      children: [
+        GameFieldBackground(),
+        Positioned(
+          top: 8.0,
+          left: animation.value,
+          child: GameTile(2),
+        )
+      ],
+    );
+  }
+}
+
+class GameFieldBackground extends StatelessWidget {
+  static const sideEdge = 8.0;
+  static const innerSpace = 8.0;
+
+  const GameFieldBackground({ Key? key }) : super(key: key);
+
+  Widget _row(int index) => Row(
+    children: 4.map((x) => GameTile.empty()),
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  );
+
+  List<Widget> _rows() => 4.map((y) => _row(y));
+
+  @override
+  Widget build(BuildContext context) {
+    const side = 2*sideEdge + 3*innerSpace + 4*GameTile.tileSize;
+    const gameColor = const Color(0xffbbada0);
+    final borderSide = BorderSide(
+      color: gameColor, 
+      style: BorderStyle.solid,
+      width: sideEdge,
+    );
+    return Container(
+      child: SizedBox(
+        width: side,
+        height: side,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.fromBorderSide(borderSide),
+            borderRadius: BorderRadius.circular(5.0),
+            color: gameColor,
+          ),
+          child: Column(
+            children: _rows(),
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          ),
+        ),
+      ),
+    );
+  }
+}

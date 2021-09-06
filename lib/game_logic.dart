@@ -1,26 +1,6 @@
 import 'dart:math';
 import 'package:p2048/game_grid.dart';
 
-// class Tile {
-//   int power = 1;
-//   GridPoint position = GridPoint.zero();
-//   String get text => '${pow(2, power)}';
-
-//   Tile.generated({ Set<GridPoint> excludedPoints = const {} }) {
-//     power = Random().nextInt(10) == 0 ? 2 : 1;
-
-//   }
-// }
-
-// enum GameActionType {
-//   create, merge, move
-// }
-
-// class GameAction {
-//   var actionType = GameActionType.create;
-
-// }
-
 /// Current state of the game
 /// Even if player won, game can continue
 enum GameState {
