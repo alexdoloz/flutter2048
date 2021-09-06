@@ -1,8 +1,9 @@
-import 'dart:async';
-import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:p2048/game_grid.dart';
-import 'package:p2048/game_logic.dart';
+import 'package:p2048/logic/game_grid.dart';
+import 'package:p2048/logic/game_logic.dart';
+import 'package:p2048/utils/utils.dart';
+import 'package:p2048/widgets/game_tile.dart';
+import 'package:p2048/widgets/game_field_background.dart';
 
 void main() {
   runApp(MyApp());
@@ -153,49 +154,6 @@ class _GameFieldWidgetState extends State<GameFieldWidget> {
     );
   }
 }
-
-class GameTile extends StatelessWidget {
-  static const tileSize = 80.0;
-  final int power;
-
-  static List<Color> colors = [
-    Color.fromARGB(89, 238, 228, 218), 
-    Color(0xffeee4da), 
-    Color(0xffede0c8),
-    Colors.orange, // TODO: Заменить на настоящие цвета
-    Colors.purple, Colors.red, Colors.deepOrange, Colors.blue,
-    Colors.teal, Colors.cyan, Colors.black, Colors.lime
-  ];
-
-  GameTile(this.power);
-  GameTile.empty() : power = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    final text = '${pow(2, power)}';
-    var textWidget = Text(
-      text,
-      style: TextStyle(fontSize: 25.0 - text.length, color: Colors.white),
-    );
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.fromBorderSide(
-          BorderSide(
-            color: Colors.transparent,
-            style: BorderStyle.solid,
-            width: 0.0,
-          )
-        ),
-        borderRadius: BorderRadius.circular(5.0),
-        color: GameTile.colors[power],
-      ),
-      width: tileSize,
-      height: tileSize,
-      alignment: Alignment.center, 
-      child: power == 0 ? null : textWidget,
-    );
-  }
-}
 /*
 Column(
           children: [
@@ -275,48 +233,6 @@ with SingleTickerProviderStateMixin {
           child: GameTile(2),
         )
       ],
-    );
-  }
-}
-
-class GameFieldBackground extends StatelessWidget {
-  static const sideEdge = 8.0;
-  static const innerSpace = 8.0;
-
-  const GameFieldBackground({ Key? key }) : super(key: key);
-
-  Widget _row(int index) => Row(
-    children: 4.map((x) => GameTile.empty()),
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  );
-
-  List<Widget> _rows() => 4.map((y) => _row(y));
-
-  @override
-  Widget build(BuildContext context) {
-    const side = 2*sideEdge + 3*innerSpace + 4*GameTile.tileSize;
-    const gameColor = const Color(0xffbbada0);
-    final borderSide = BorderSide(
-      color: gameColor, 
-      style: BorderStyle.solid,
-      width: sideEdge,
-    );
-    return Container(
-      child: SizedBox(
-        width: side,
-        height: side,
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.fromBorderSide(borderSide),
-            borderRadius: BorderRadius.circular(5.0),
-            color: gameColor,
-          ),
-          child: Column(
-            children: _rows(),
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          ),
-        ),
-      ),
     );
   }
 }

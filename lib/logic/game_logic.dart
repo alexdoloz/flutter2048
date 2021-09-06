@@ -1,5 +1,7 @@
 import 'dart:math';
-import 'package:p2048/game_grid.dart';
+import 'package:p2048/logic/game_grid.dart';
+import 'package:p2048/logic/grid_point.dart';
+import 'package:p2048/utils/utils.dart';
 
 /// Current state of the game
 /// Even if player won, game can continue

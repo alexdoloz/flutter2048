@@ -1,4 +1,6 @@
-import 'package:p2048/game_grid.dart';
+import 'package:p2048/logic/game_grid.dart';
+import 'package:p2048/utils/utils.dart';
+import 'package:p2048/logic/grid_point.dart';
 
 /// Type of action for 2048 tiles
 enum TileActionType {
