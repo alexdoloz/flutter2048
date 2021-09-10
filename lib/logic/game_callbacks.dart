@@ -6,16 +6,51 @@ import 'package:p2048/logic/grid_point.dart';
 enum TileActionType {
   create, // new tile
   move, // just move from one point to another
-  moveAndDelete, // when tile is moved and merged into another one
-  moveAndDouble, // when tile is moved and merged to
-  double
+  merge, // merges two tiles
 }
 
 /// Action for tile
 class TileAction {
-  var type = TileActionType.create;
-  var sourcePoint = GridPoint.zero();
-  var destinationPoint = GridPoint.zero(); // ignored for create, double types
-  var power = 0; // ignored for move, moveAndDelete types
+  final TileActionType type;
+  final GridPoint sourcePoint;
+  final GridPoint sourcePoint2;
+  final GridPoint destinationPoint;
+  final int destinationPower;
+
+  const TileAction.create(
+    { required GridPoint destinationPoint, required int destinationPower }
+  ) :
+    this.destinationPoint = destinationPoint,
+    this.destinationPower = destinationPower,
+    sourcePoint = const GridPoint.zero(),
+    sourcePoint2 = const GridPoint.zero(),
+    type = TileActionType.create;
+
+  const TileAction.merge(
+    { 
+      required GridPoint sourcePoint,
+      required GridPoint sourcePoint2,
+      required GridPoint destinationPoint, 
+      required int destinationPower,
+    }
+  ) :
+    this.sourcePoint = sourcePoint,
+    this.sourcePoint2 = sourcePoint2,
+    this.destinationPoint = destinationPoint,
+    this.destinationPower = destinationPower,
+    type = TileActionType.merge;
+
+  const TileAction.move(
+    { 
+      required GridPoint sourcePoint,
+      required GridPoint destinationPoint, 
+      required int destinationPower,
+    }
+  ) : 
+    this.sourcePoint = sourcePoint,
+    this.sourcePoint2 = const GridPoint.zero(),
+    this.destinationPoint = destinationPoint,
+    this.destinationPower = destinationPower,
+    type = TileActionType.move;
 }
 

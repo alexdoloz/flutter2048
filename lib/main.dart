@@ -1,9 +1,15 @@
+import 'dart:math';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:p2048/logic/game_callbacks.dart';
 import 'package:p2048/logic/game_grid.dart';
 import 'package:p2048/logic/game_logic.dart';
+import 'package:p2048/logic/grid_point.dart';
 import 'package:p2048/utils/utils.dart';
 import 'package:p2048/widgets/game_tile.dart';
 import 'package:p2048/widgets/game_field_background.dart';
+import 'package:p2048/widgets/animated_tile.dart';
 
 void main() {
   runApp(MyApp());
@@ -194,6 +200,7 @@ Column(
           crossAxisAlignment: CrossAxisAlignment.center,
         ),*/
 
+
 class GameField2 extends StatefulWidget {
   const GameField2({ Key? key }) : super(key: key);
 
@@ -201,38 +208,90 @@ class GameField2 extends StatefulWidget {
   _GameField2State createState() => _GameField2State();
 }
 
+class Tile {
+  GridPoint position = GridPoint.zero();
+  bool isHidden = true;
+  int power = 1;
+  int index = 0;
+}
+
+extension RandomItem<T> on Set<T> {
+  T get randomItem => this.elementAt(Random().nextInt(this.length));
+}
+
 class _GameField2State 
 extends State<GameField2>
-with SingleTickerProviderStateMixin {
+with SingleTickerProviderStateMixin 
+implements GameDelegate {
   late Animation<double> animation;
   late AnimationController controller;
+  final logic = GameLogic();
+  
+  var justCreatedTiles = <Tile>{};
+  var tiles = List<Tile>.generate(16, (index) => Tile()..index = index);
+  Set<GridPoint> get freePositions => 
+    Set<GridPoint>
+      .of(List<GridPoint>.generate(16, (n) => GridPoint.number(n)))
+      .difference(<GridPoint>{
+        for (var tile in tiles)
+          if (!tile.isHidden) tile.position
+      });
+    
+
+  Tile _freeTile() => tiles.firstWhere((tile) => tile.isHidden == true);
+
+  double _toGridPosition(int logicalPosition) =>
+    logicalPosition * 
+    (GameFieldBackground.tileSize + GameFieldBackground.innerSpace) 
+    + GameFieldBackground.sideEdge;
+
+  List<Widget> _tileWidgets() => 
+    tiles
+    .map((tile) => AnimatedPositioned(
+      key: ValueKey(tile.index),
+      duration: justCreatedTiles.contains(tile) ? Duration(milliseconds: 0) : Duration(milliseconds: 500),
+      left: _toGridPosition(tile.position.x),
+      top: _toGridPosition(tile.position.y),
+      child: AnimatedTile(power: tile.power, opacity: tile.isHidden ? 0.0 : 1.0),
+    ))
+    .toList();
 
   @override
   void initState() {
     super.initState();
-    controller = AnimationController(
-      duration: const Duration(milliseconds: 500),
-      vsync: this,
-    );
-    animation = Tween<double>(begin: 80+16, end: 240+32).animate(controller)
-      ..addListener(() {
-        setState(() {});
+    logic.startNewGame();
+  }
+
+  _newTile([int count = 1]) {
+    justCreatedTiles = {};
+    count.forEach((x) {
+      var tile = _freeTile();
+      justCreatedTiles.add(tile);
+      setState(() {
+        tile.isHidden = false;
+        tile.position = freePositions.randomItem;
+        tile.power = Random().nextInt(10) + 1;
       });
-    controller.forward();
+    });
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Stack(
-      alignment: AlignmentDirectional.center,
-      children: [
-        GameFieldBackground(),
-        Positioned(
-          top: 8.0,
-          left: animation.value,
-          child: GameTile(2),
-        )
-      ],
+  Widget build(BuildContext context) =>
+    GestureDetector(
+      onTap: () {
+        _newTile(2);
+      },
+      child: Stack(
+        alignment: AlignmentDirectional.center,
+        children: [
+          GameFieldBackground(),
+          ..._tileWidgets()
+        ],
+      ),
     );
+
+  @override
+  void runGameActions(List<TileAction> actions) {
+
   }
 }

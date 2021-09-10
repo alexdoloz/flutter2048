@@ -5,6 +5,7 @@ import 'package:p2048/utils/utils.dart';
 class GameFieldBackground extends StatelessWidget {
   static const sideEdge = 8.0;
   static const innerSpace = 8.0;
+  static const tileSize = GameTile.tileSize;
 
   const GameFieldBackground({ Key? key }) : super(key: key);
 
@@ -17,7 +18,7 @@ class GameFieldBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const side = 2*sideEdge + 3*innerSpace + 4*GameTile.tileSize;
+    const side = 2*sideEdge + 3*innerSpace + 4*tileSize;
     const gameColor = const Color(0xffbbada0);
     final borderSide = BorderSide(
       color: gameColor, 
