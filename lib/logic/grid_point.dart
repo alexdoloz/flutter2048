@@ -30,10 +30,5 @@ class GridPoint {
   const GridPoint.zero():
     number = 0;
 
-  GridPoint.random({ Set<int> excluding = const {} }):
-    number = List<int>
-      .generate(16, (i) => i)
-      .where((i) => !excluding.contains(i))
-      .toList()
-      .randomItem();
+  static final allPoints = Set<GridPoint>.of(List.generate(16, (index) => GridPoint.number(index)));
 }

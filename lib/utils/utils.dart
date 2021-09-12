@@ -1,10 +1,8 @@
 import 'dart:math';
 import 'package:flutter/foundation.dart';
 
-extension RandomListItem<T> on List<T> {
-  T randomItem() {
-    return this[Random().nextInt(length)];
-  }
+extension RandomItem<T> on Iterable<T> {
+  T? get randomItem => isEmpty ? null : elementAt(Random().nextInt(length));
 }
 
 extension Counting on int {
