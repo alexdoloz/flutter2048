@@ -54,6 +54,7 @@ class _GameFieldWidgetState extends State<GameFieldWidget> {
     Future.delayed(Duration(milliseconds: 500)).then((value) => _newTile());
   }
 
+  /// Perform move if possible
   move(MoveDirection direction) {
     if (!logic.canMove(direction)) return;
     justCreatedTiles = {};
@@ -91,15 +92,18 @@ class _GameFieldWidgetState extends State<GameFieldWidget> {
       behavior: HitTestBehavior.opaque,
       onHorizontalDragEnd: _handleDrag(MoveDirection.left, MoveDirection.right),
       onVerticalDragEnd: _handleDrag(MoveDirection.up, MoveDirection.down),
-      child: Padding(
-        padding: EdgeInsets.all(50),
-        child: Stack(
+      child: OverflowBox(
+        alignment: Alignment.center,
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: Stack(
             alignment: AlignmentDirectional.center,
             children: [
               GameFieldBackground(),
-              ..._tileWidgets()
+              ..._tileWidgets(),
             ],
           ),
-      ),
+        ),
+      )
     );
 }
