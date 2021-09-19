@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:p2048/widgets/game_field.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   runApp(App());
@@ -17,7 +16,7 @@ class App extends StatelessWidget {
       ),
       home: Scaffold(
         body: Padding(
-          padding: const EdgeInsets.fromLTRB(50, 20, 50, 10),
+          padding: const EdgeInsets.fromLTRB(0, 20, 0, 10),
           child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               mainAxisSize: MainAxisSize.max,
@@ -44,7 +43,7 @@ class GameHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      alignment: Alignment.topLeft,
+      alignment: Alignment.center,
       child: Text(
         '2048', 
         style: GoogleFonts.raleway(

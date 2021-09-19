@@ -1,6 +1,7 @@
 import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 import 'package:p2048/widgets/game_tile.dart';
+import 'package:p2048/utils/durations.dart';
 
 class AnimatedTile extends StatefulWidget {
   final int power;
@@ -16,7 +17,6 @@ class AnimatedTile extends StatefulWidget {
 }
 
 class _AnimatedTileState extends State<AnimatedTile> with TickerProviderStateMixin {
-  static const animationDuration = Duration(milliseconds: 400);
   late AnimationController controller;
   late Animation<double> animation;
 
@@ -31,7 +31,10 @@ class _AnimatedTileState extends State<AnimatedTile> with TickerProviderStateMix
   @override
   void initState() {
     super.initState();
-    controller = AnimationController(vsync: this, duration: animationDuration);
+    controller = AnimationController(
+      vsync: this,
+      duration: Durations.tileScaleAnimationDuration
+    );
     var tween1 = Tween<double>(begin: 1.0, end: 1.3);
     animation = TweenSequence([
       TweenSequenceItem(tween: tween1, weight: 1),
@@ -56,7 +59,7 @@ class _AnimatedTileState extends State<AnimatedTile> with TickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     return AnimatedOpacity(
-      duration: animationDuration,
+      duration: Durations.tileOpacityAnimationDuration,
       opacity: widget.opacity,
       child: ScaleTransition(
         scale: animation,

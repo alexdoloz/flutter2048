@@ -3,6 +3,8 @@ import 'package:p2048/logic/game_grid.dart';
 import 'package:p2048/logic/game_logic.dart';
 import 'package:p2048/widgets/game_field_background.dart';
 import 'package:p2048/widgets/animated_tile.dart';
+import 'package:p2048/utils/durations.dart';
+import 'dart:math';
 
 class GameFieldWidget extends StatefulWidget {
   const GameFieldWidget({ Key? key }) : super(key: key);
@@ -27,7 +29,7 @@ class _GameFieldWidgetState extends State<GameFieldWidget> {
     logic.tileContainer.tiles
     .map((tile) => AnimatedPositioned(
       key: ValueKey(tile.index),
-      duration: justCreatedTiles.contains(tile) ? Duration(milliseconds: 0) : Duration(milliseconds: 500),
+      duration: justCreatedTiles.contains(tile) ? Duration.zero : Durations.tileMovementDuration,
       left: _toGridPosition(tile.position.x),
       top: _toGridPosition(tile.position.y),
       child: AnimatedTile(power: tile.power, opacity: tile.isHidden ? 0.0 : 1.0),
@@ -51,7 +53,7 @@ class _GameFieldWidgetState extends State<GameFieldWidget> {
   }
 
   waitAndMakeNew() {
-    Future.delayed(Duration(milliseconds: 500)).then((value) => _newTile());
+    Future.delayed(Durations.newTileDelay).then((value) => _newTile());
   }
 
   /// Perform move if possible
@@ -64,34 +66,27 @@ class _GameFieldWidgetState extends State<GameFieldWidget> {
     waitAndMakeNew();
   }
 
-  static const dragThreshold = 30.0;
+  static const _threshold = 0.8;
 
-  Function(DragEndDetails) _handleDrag(MoveDirection negative, MoveDirection positive) =>
+  Function(DragEndDetails) _handleDrag({ bool horizontally = true }) =>
     (details) {
-      if (details.primaryVelocity == null) return;
-        var velocity = details.primaryVelocity ?? 0;
-        MoveDirection direction;
-        if (velocity > dragThreshold) {
-          direction = positive;
-        } else if (velocity < -dragThreshold) {
-          direction = negative;
-        } else {
-          return;
-        }
-        if (!logic.canMove(direction)) return;
-        justCreatedTiles = {};
-        setState(() {
-          logic.move(direction);
-        });
-        Future.delayed(Duration(milliseconds: 550)).then((_) => _newTile());
+        var velocityDirection = details.velocity.pixelsPerSecond.direction;
+        var trigFunction = horizontally ? cos : sin;
+        var result = trigFunction(velocityDirection);
+        if (result.abs() < _threshold) return;
+        var moveDirection = 
+          horizontally ? 
+            (result > 0 ? MoveDirection.right : MoveDirection.left) :
+            (result > 0 ? MoveDirection.down : MoveDirection.up);
+        move(moveDirection);
     };
 
   @override
   Widget build(BuildContext context) =>
     GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onHorizontalDragEnd: _handleDrag(MoveDirection.left, MoveDirection.right),
-      onVerticalDragEnd: _handleDrag(MoveDirection.up, MoveDirection.down),
+      onHorizontalDragEnd: _handleDrag(horizontally: true),
+      onVerticalDragEnd: _handleDrag(horizontally: false),
       child: OverflowBox(
         alignment: Alignment.center,
         child: Padding(
