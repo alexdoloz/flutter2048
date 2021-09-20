@@ -1,5 +1,3 @@
-import 'package:p2048/utils/utils.dart';
-
 /// Point for 4x4 grid
 class GridPoint {
   final int number;

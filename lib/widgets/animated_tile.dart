@@ -23,7 +23,7 @@ class _AnimatedTileState extends State<AnimatedTile> with TickerProviderStateMix
   @override
   void didUpdateWidget(covariant AnimatedTile oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.power != widget.power) {
+    if (oldWidget.power != widget.power && oldWidget.opacity == 1) {
       controller.forward();
     }
   }

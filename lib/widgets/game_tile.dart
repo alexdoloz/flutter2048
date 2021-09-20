@@ -9,13 +9,15 @@ class GameTile extends StatelessWidget {
   Color get _backgroundColor => 
     power >= _backgroundColors.length ? 
       _backgroundColors.last : _backgroundColors[power];
-  Color get _textColor => power < 4 ? Color(0xff776e65) : Color(0xfff9f6f2);
+  Color get _textColor => power < 4 && power > 1 ? 
+    Color(0xff776e65) : 
+    Color(0xfff9f6f2);
   String get _tileText => '${pow(2, power)}';
   double get _textSize => 45.0 - _tileText.length;
 
   static List<Color> _backgroundColors = [
     Color(0x59eee4da), 
-    Color(0xffeee4da), 
+    Colors.pink[300]!, 
     Color(0xffede0c8),
     Color(0xfff2b179),
     Color(0xfff59563), 
