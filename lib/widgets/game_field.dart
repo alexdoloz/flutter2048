@@ -5,21 +5,24 @@ import 'package:p2048/logic/tile.dart';
 import 'package:p2048/widgets/game_field_background.dart';
 import 'package:p2048/widgets/animated_tile.dart';
 import 'package:p2048/utils/durations.dart';
-import 'dart:math';
+// import 'dart:math';
+import 'dart:ui';
 
+/// Widget for displaying game field and handle reactions
 class GameFieldWidget extends StatefulWidget {
   const GameFieldWidget({ Key? key }) : super(key: key);
+
+  static const _threshold = 0.9;
+  static const _distanceThreshold = 50;
 
   @override
   _GameFieldWidgetState createState() => _GameFieldWidgetState();
 }
 
 class _GameFieldWidgetState extends State<GameFieldWidget> {
-  late Animation<double> animation;
-  late AnimationController controller;
-  
-  // var justCreatedTiles = <Tile>{};
-    
+  Offset? startOffset;
+  Offset? endOffset;
+
   double _toGridPosition(int logicalPosition) =>
     logicalPosition * 
     (GameFieldBackground.tileSize + GameFieldBackground.innerSpace) 
@@ -28,7 +31,6 @@ class _GameFieldWidgetState extends State<GameFieldWidget> {
   Duration _animationDurationForTile(Tile tile) =>
     GameManager.shared.tileContainer.justAddedTiles.contains(tile) ? 
       Duration.zero : Durations.tileMovementDuration;
-
 
   List<Widget> _tileWidgets() => 
     GameManager.shared.tileContainer.tiles
@@ -45,74 +47,50 @@ class _GameFieldWidgetState extends State<GameFieldWidget> {
     ))
     .toList();
 
-  @override
-  void initState() {
-    super.initState();
-    // setState(() {
-    //   justCreatedTiles = <Tile>{...logic.startNewGame()};  
-    // });
+  MoveDirection? _directionFromDelta(Offset delta) {
+    if (delta.distance < GameFieldWidget._distanceThreshold) return null;
+    var scaledDelta = delta / delta.distance;
+    if (scaledDelta.dx > GameFieldWidget._threshold) return MoveDirection.right;
+    if (scaledDelta.dx < -GameFieldWidget._threshold) return MoveDirection.left;
+    if (scaledDelta.dy > GameFieldWidget._threshold) return MoveDirection.down;
+    if (scaledDelta.dy < -GameFieldWidget._threshold) return MoveDirection.up;
   }
 
-  // _newTile([int count = 1]) {
-  //   setState(() {
-  //     justCreatedTiles = {};
-  //     var newTiles = logic.addRandom(count);
-  //     justCreatedTiles.addAll(newTiles);
-  //   });
-  // }
-
-  // waitAndMakeNew() {
-  //   Future.delayed(Durations.newTileDelay).then((value) => _newTile());
-  // }
-
-  /// Perform move if possible
-  // move(MoveDirection direction) {
-  //   if (!logic.canMove(direction)) return;
-  //   justCreatedTiles = {};
-  //   setState(() {
-  //     logic.move(direction);
-  //   });
-  //   waitAndMakeNew();
-  // }
-
-  static const _threshold = 0.8;
-
-  Function(DragEndDetails) _handleDrag({ bool horizontally = true }) =>
-    (details) {
-      var velocityDirection = details.velocity.pixelsPerSecond.direction;
-      var trigFunction = horizontally ? cos : sin;
-      var result = trigFunction(velocityDirection);
-      if (result.abs() < _threshold) return;
-      var moveDirection = 
-        horizontally ? 
-          (result > 0 ? MoveDirection.right : MoveDirection.left) :
-          (result > 0 ? MoveDirection.down : MoveDirection.up);
-      // move(moveDirection);
-      GameManager.shared.move(moveDirection);
-  };
-
   @override
-  Widget build(BuildContext context) =>
-    GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onHorizontalDragEnd: _handleDrag(horizontally: true),
-      onVerticalDragEnd: _handleDrag(horizontally: false),
-      child: OverflowBox(
-        alignment: Alignment.center,
-        child: Padding(
-          padding: EdgeInsets.all(20),
-          child: AnimatedBuilder(
-            animation: GameManager.shared.tileContainer, 
-            builder: (_, background) => Stack(
-              alignment: AlignmentDirectional.center,
-              children: [
-                background!,
-                ..._tileWidgets()
-              ],
-            ),
-            child: GameFieldBackground(),
-          )
-        ),
-      )
-    );
+  Widget build(BuildContext context) => GestureDetector(
+    behavior: HitTestBehavior.opaque,
+    onPanStart: (details) {
+      startOffset = details.globalPosition;
+    },
+    onPanEnd: (details) {
+      if (startOffset == null || endOffset == null) return;
+      var delta = endOffset! - startOffset!;
+      var direction = _directionFromDelta(delta);
+      if (direction == null) return;
+      GameManager.shared.move(direction);
+    },
+    onPanCancel: () {
+      print("Cancelled");
+    },
+    onPanUpdate: (details) {
+      endOffset = details.globalPosition;
+    },
+    child: OverflowBox(
+      alignment: Alignment.center,
+      child: Padding(
+        padding: EdgeInsets.all(20),
+        child: AnimatedBuilder(
+          animation: GameManager.shared.tileContainer, 
+          builder: (_, background) => Stack(
+            alignment: AlignmentDirectional.center,
+            children: [
+              background!,
+              ..._tileWidgets()
+            ],
+          ),
+          child: GameFieldBackground(),
+        )
+      ),
+    )
+  );
 }
