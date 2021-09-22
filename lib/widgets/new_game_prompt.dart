@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:p2048/logic/game_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:p2048/widgets/game_button.dart';
 
 class NewGamePrompt extends StatelessWidget {
   const NewGamePrompt({ Key? key }) : super(key: key);
@@ -28,20 +29,11 @@ class NewGamePrompt extends StatelessWidget {
                       ),
                     ),
                 ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Color(0xff776e65),
-                    textStyle: GoogleFonts.roboto(
-                      textStyle: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold
-                      ),
-                    ),
-                  ),
+                GameButton(
+                  title: "New game", 
                   onPressed: () {
                     GameManager.shared.startGame();
-                  }, 
-                  child: Text("Start game".toUpperCase())
+                  }
                 ),
               ],
             ),

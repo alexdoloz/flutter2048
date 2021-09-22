@@ -21,37 +21,45 @@ class ScoreWidget extends StatelessWidget {
       color: Color(0xffad9d8f),
     );
     return SizedBox(
-        height: 60,
+      height: 60,
 
-        child: Container(
-          decoration: decoration,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Text(
-                  scoreLabel.toUpperCase(),
-                  style: GoogleFonts.roboto(
-                    textStyle: TextStyle(
-                      color: Color(0xffeee4da),
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                  ),),
+      child: Container(
+        decoration: decoration,
+        constraints: BoxConstraints(maxWidth: 120),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Spacer(flex: 3,),
+              Text(
+                scoreLabel.toUpperCase(),
+                textAlign: TextAlign.center,
+                style: GoogleFonts.roboto(
+                  textStyle: TextStyle(
+                    color: Color(0xffeee4da),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
-                Text(
-                  score,
-                  style: GoogleFonts.roboto(
-                    textStyle: TextStyle(
-                      color: Color(0xffffffff),
-                      fontSize: 25,
-                      fontWeight: FontWeight.w700,
-                  ),),
+              ),
+              Spacer(flex: 1,),
+              Text(
+                score,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.roboto(
+                  textStyle: TextStyle(
+                    color: Color(0xffffffff),
+                    fontSize: 25,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
+              ),
+              Spacer(flex: 2,),
             ],
-        ),
           ),
+        ),
       ),
     );
   }

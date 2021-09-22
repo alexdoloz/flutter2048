@@ -41,6 +41,7 @@ class GameManager {
 
   resetGame() {
     tileContainer.reset();
+    score.value = 0;
     Future
       .delayed(Durations.newTileDelay)
       .then((_) => tileContainer.addRandom(count: 2));
