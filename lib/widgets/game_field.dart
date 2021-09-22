@@ -5,14 +5,13 @@ import 'package:p2048/logic/tile.dart';
 import 'package:p2048/widgets/game_field_background.dart';
 import 'package:p2048/widgets/animated_tile.dart';
 import 'package:p2048/utils/durations.dart';
-// import 'dart:math';
 import 'dart:ui';
 
 /// Widget for displaying game field and handle reactions
 class GameFieldWidget extends StatefulWidget {
   const GameFieldWidget({ Key? key }) : super(key: key);
 
-  static const _threshold = 0.9;
+  static const _threshold = 0.75;
   static const _distanceThreshold = 50;
 
   @override

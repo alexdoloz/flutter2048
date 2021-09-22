@@ -27,7 +27,8 @@ class GameManager {
 
   move(MoveDirection direction) {
     if (!tileContainer.canMove(direction)) return;
-    tileContainer.move(direction);
+    int scoreDelta = tileContainer.move(direction);
+    _updateScores(scoreDelta);
     Future
       .delayed(Durations.newTileDelay)
       .then((_) => tileContainer.addRandom());
@@ -44,5 +45,13 @@ class GameManager {
       .delayed(Durations.newTileDelay)
       .then((_) => tileContainer.addRandom(count: 2));
     status.value = GameState.inProgress;
+  }
+
+  // PRIVATE
+  _updateScores(int scoreDelta) {
+    score.value += scoreDelta;
+    if (bestScore.value < score.value) {
+      bestScore.value = score.value;
+    }
   }
 }

@@ -44,13 +44,15 @@ class TileContainer extends ChangeNotifier {
     return result;
   }
 
-   move(MoveDirection direction) {
+  int move(MoveDirection direction) {
     justAddedTiles.clear();
+    int score = 0;
     _enumerateLines(direction: direction, closure: (line) {
-      _squash(line);
+      score += _squash(line);
       return false;
     });
     notifyListeners();
+    return score;
   }
 
   addRandom({ int count = 1 }) {
@@ -91,7 +93,7 @@ class TileContainer extends ChangeNotifier {
     }
   }
 
- bool _canSquash(OrientedLine line) {
+  bool _canSquash(OrientedLine line) {
     final sorted = _matchingTiles(line);
     line.sort(sorted);
     var currentPower = -1;
@@ -105,9 +107,10 @@ class TileContainer extends ChangeNotifier {
     return false;
   }
 
-  _squash(OrientedLine line) {
+  int _squash(OrientedLine line) {
     var sortedTiles = _matchingTiles(line);
-    if (sortedTiles.isEmpty) return;
+    if (sortedTiles.isEmpty) return 0;
+    int score = 0;
     line.sort(sortedTiles);
     Tile? lastTile;
     GridPoint nextAvailablePosition = line.firstPoint;
@@ -123,10 +126,12 @@ class TileContainer extends ChangeNotifier {
           ..position = lastTile.position
           ..isHidden = true;
         lastTile.power = lastTile.power + 1;
+        score += (2 << tile.power);
         lastTile = null;
         continue;
       }
     }
+    return score;
   }
 
   List<Tile> _matchingTiles(OrientedLine line) {
