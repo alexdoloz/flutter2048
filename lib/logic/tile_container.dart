@@ -79,6 +79,26 @@ class TileContainer extends ChangeNotifier {
     notifyListeners();
   }
 
+  updateTilesFromGrid(GameGrid grid) {
+    justAddedTiles.clear();
+    for (var i = 0; i < _tiles.length; i++) {
+      var point = GridPoint.number(i);
+      _tiles[i]
+        ..isHidden = grid[point] == 0
+        ..index = i
+        ..position = point
+        ..power = grid[point];
+    }
+  }
+
+  GameGrid gridFromTiles() {
+    var grid = GameGrid();
+    activeTiles.forEach((tile) {
+      grid[tile.position] = tile.power;
+    });
+    return grid;
+  }
+
 // PRIVATE
   void _enumerateLines({
     MoveDirection? direction,

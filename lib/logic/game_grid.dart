@@ -31,7 +31,7 @@ class GameGrid {
     canMove(MoveDirection.up) || canMove(MoveDirection.down) ||
     canMove(MoveDirection.left) || canMove(MoveDirection.right);
 
-  operator [](GridPoint p) => _cells[p.number];
+  int operator [](GridPoint p) => _cells[p.number];
   operator []=(GridPoint p, int power) => _cells[p.number] = power;
 
   List<int> row(int index) => 4.map((x) => _cells[4*index+x]);
