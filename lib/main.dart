@@ -6,7 +6,6 @@ import 'widgets/game_header.dart';
 import 'logic/game_manager.dart';
 import 'package:p2048/widgets/new_game_prompt.dart';
 import 'package:p2048/widgets/you_win_prompt.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(App());
@@ -22,75 +21,84 @@ class App extends StatelessWidget {
       ),
       home: Scaffold(
         body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(0, 20, 0, 10),
-            child: ValueListenableBuilder(
-              valueListenable: GameManager.shared.status,
-              builder: (_, status, __) {
-                return Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(flex: 1, child: GameHeader()),
-                      if (status == GameState.notStarted) 
-                      Center(
-                        child: SizedBox(
-                          width: 400,
-                          height: 400,
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              GameFieldBackground(),
-                              NewGamePrompt()
-                            ],
-                          ),
+          child: Container(
+            color: Color(0xfffaf8ef),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 20, 0, 30),
+              child: ValueListenableBuilder(
+                valueListenable: GameManager.shared.status,
+                builder: (_, status, __) {
+                  return Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                            height: 130,
+                            child: GameHeader(),
                         ),
-                      ), 
-                      if (status == GameState.lost)
-                      Center(
-                        child: SizedBox(
-                          width: 400,
-                          height: 400,
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              GameFieldWidget(),
-                              YouLosePrompt(),
-                            ],
-                          ),
+                        Spacer(),
+                        if (status == GameState.notStarted) 
+                        CenteredSquare(
+                          children: [
+                            GameFieldBackground(),
+                            NewGamePrompt(),
+                          ],
                         ),
-                      ),
-                      if (status == GameState.won)
-                      Center(
-                        child: SizedBox(
-                          width: 400,
-                          height: 400,
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              GameFieldWidget(),
-                              YouWinPrompt(),
-                            ],
-                          ),
+                        if (status == GameState.lost)
+                        CenteredSquare(
+                          children: [
+                            GameFieldWidget(),
+                            YouLosePrompt(),
+                          ]
                         ),
-                      ),
-                      if (status == GameState.inProgress || status == GameState.wonInProgress)
-                      Center(
-                        child: SizedBox(
-                          width: 400,
-                          height: 400,
-                          child: GameFieldWidget(),
+                        if (status == GameState.won)
+                        CenteredSquare(
+                          children: [
+                            GameFieldWidget(),
+                            YouWinPrompt(),
+                          ]
                         ),
-                      ),
-                      Spacer(flex: 1,)
-                    ],
-                  );
-              }
-            ),
-            ),
+                        if (
+                          status == GameState.inProgress || 
+                          status == GameState.wonInProgress
+                        )
+                        CenteredSquare(
+                          children: [GameFieldWidget()],
+                        ),
+                      ],
+                    );
+                }
+              ),
+              ),
+          ),
         ),
         ),
+    );
+  }
+}
+
+class CenteredSquare extends StatelessWidget {
+  final List<Widget> children;
+
+  const CenteredSquare({ 
+    Key? key, 
+    required List<Widget> children 
+  }) : 
+    this.children = children,
+    super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: SizedBox(
+        width: 400,
+        height: 400,
+        child: Stack(
+          alignment: Alignment.center,
+          children: children,
+        ),
+      ),
     );
   }
 }

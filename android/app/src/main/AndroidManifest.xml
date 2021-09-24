@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.p2048">
    <application
-        android:label="p2048"
+        android:label="Flutter 2048"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

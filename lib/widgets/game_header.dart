@@ -31,14 +31,14 @@ class GameHeader extends StatelessWidget {
                     )
                   ),
                 ),
-                builder: (_, status, header) {
+                builder: (context, status, header) {
                   return Column(
                     children: [
                       header!,
                       if (status != GameState.notStarted) GameButton(
                         title: "Restart game", 
                         onPressed: () {
-                          GameManager.shared.resetGame();
+                          _showAlertDialog(context);
                         }
                       ),
                     ],
@@ -66,6 +66,37 @@ class GameHeader extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  _showAlertDialog(BuildContext context) {
+    Widget restartButton = TextButton(
+      child: Text("Restart"),
+      onPressed: () { 
+        GameManager.shared.resetGame();
+        Navigator.pop(context);
+      },
+    );
+
+    Widget cancelButton = TextButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: Text("Do you really want to restart the game?"),
+      content: Text("All current progress will be lost."),
+      actions: [
+        restartButton,
+        cancelButton,
+      ],
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => alert,
     );
   }
 }
