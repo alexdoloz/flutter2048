@@ -26,6 +26,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   google_fonts: ^2.1.0
   shared_preferences: ^2.0.0
+  assets_audio_player: ^3.0.3+6
 
 dev_dependencies:
   flutter_test:
@@ -41,7 +42,9 @@ flutter_launcher_name:
 # The following section is specific to Flutter.
 flutter:
   uses-material-design: true
-  
+  assets:
+  - sounds/fail.mp3
+  - sounds/win.m4a
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

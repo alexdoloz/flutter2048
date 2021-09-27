@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/foundation.dart';
+import 'package:p2048/main.dart';
 import 'game_grid.dart';
 import 'tile_container.dart';
 import 'package:p2048/utils/durations.dart';
@@ -44,11 +45,11 @@ class GameManager {
   }
 
   startGame() {
-    tileContainer.addRandom(count: 2);
-    status.value = GameState.inProgress;
+    resetGame();
   }
 
   resetGame() {
+    player.stop();
     tileContainer.reset();
     score.value = 0;
     Future
@@ -85,11 +86,17 @@ class GameManager {
   _addTile() {
     tileContainer.addRandom();
     if (!tileContainer.canMakeAnyMove) {
-      status.value = GameState.lost;
+      Future.delayed(
+        Durations.tileMovementDuration, 
+        () => status.value = GameState.lost
+      );
       return;
     }
     if (tileContainer.has2048 && status.value == GameState.inProgress) {
-      status.value = GameState.won;
+      Future.delayed(
+        Durations.tileMovementDuration, 
+        () => status.value = GameState.won
+      );
       return;
     }
     _saveState();

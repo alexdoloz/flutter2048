@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:p2048/utils/colors.dart';
 
 class GameButton extends StatelessWidget {
   final Function onPressed;
@@ -18,7 +19,7 @@ class GameButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        primary: Color(0xff776e65),
+        primary: GameColors.darkForeground,
         textStyle: GoogleFonts.roboto(
           textStyle: TextStyle(
             fontSize: 15,

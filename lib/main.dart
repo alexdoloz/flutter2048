@@ -1,4 +1,6 @@
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
+import 'package:p2048/widgets/centered_square.dart';
 import 'package:p2048/widgets/game_field_background.dart';
 import 'package:p2048/widgets/you_lose_prompt.dart';
 import 'widgets/game_field.dart';
@@ -11,7 +13,40 @@ void main() {
   runApp(App());
 }
 
+var player = AssetsAudioPlayer();
+
 class App extends StatelessWidget {
+   Widget _widgetForStatus(GameState status) {
+    switch (status) {
+    case GameState.notStarted: return CenteredSquare(
+      key: ValueKey(0),
+      children: [
+        GameFieldBackground(),
+        NewGamePrompt(),
+      ],
+    );
+    case GameState.lost: return CenteredSquare(
+      key: ValueKey(1),
+      children: [
+        GameFieldWidget(),
+        YouLosePrompt(),
+      ]
+    );
+    case GameState.inProgress:
+    case GameState.wonInProgress: return CenteredSquare(
+      key: ValueKey(2),
+      children: [GameFieldWidget()],
+    );
+    case GameState.won: return CenteredSquare(
+      key: ValueKey(3),
+      children: [
+        GameFieldWidget(),
+        YouWinPrompt(),
+      ]
+    );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -20,85 +55,44 @@ class App extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: Scaffold(
-        body: SafeArea(
-          child: Container(
-            color: Color(0xfffaf8ef),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 20, 0, 30),
-              child: ValueListenableBuilder(
-                valueListenable: GameManager.shared.status,
-                builder: (_, status, __) {
-                  return Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                            height: 130,
-                            child: GameHeader(),
-                        ),
-                        Spacer(),
-                        if (status == GameState.notStarted) 
-                        CenteredSquare(
-                          children: [
-                            GameFieldBackground(),
-                            NewGamePrompt(),
-                          ],
-                        ),
-                        if (status == GameState.lost)
-                        CenteredSquare(
-                          children: [
-                            GameFieldWidget(),
-                            YouLosePrompt(),
-                          ]
-                        ),
-                        if (status == GameState.won)
-                        CenteredSquare(
-                          children: [
-                            GameFieldWidget(),
-                            YouWinPrompt(),
-                          ]
-                        ),
-                        if (
-                          status == GameState.inProgress || 
-                          status == GameState.wonInProgress
-                        )
-                        CenteredSquare(
-                          children: [GameFieldWidget()],
-                        ),
-                      ],
-                    );
-                }
+        body: Builder(
+          builder: (context) {
+            return SafeArea(
+              child: Container(
+                color: Color(0xfffaf8ef),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 20, 0, 30),
+                  child: ValueListenableBuilder(
+                    valueListenable: GameManager.shared.status,
+                    builder: (_, GameState status, __) {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ElevatedButton(onPressed: () { 
+                            GameManager.shared.status.value = GameState.lost;
+                          }, child: Text("lose")),
+                          ElevatedButton(onPressed: () { 
+                            GameManager.shared.status.value = GameState.won;
+                          }, child: Text("win")),
+                          GameHeader(),
+                          Spacer(),
+                          AnimatedSwitcher(
+                            duration: Duration(milliseconds: 250), 
+                            child: _widgetForStatus(status),
+                          ),
+                          Spacer(),
+                        ],
+                      );
+                    }
+                  ),
+                ),
               ),
-              ),
-          ),
+            );
+          }
         ),
         ),
-    );
-  }
-}
-
-class CenteredSquare extends StatelessWidget {
-  final List<Widget> children;
-
-  const CenteredSquare({ 
-    Key? key, 
-    required List<Widget> children 
-  }) : 
-    this.children = children,
-    super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: SizedBox(
-        width: 400,
-        height: 400,
-        child: Stack(
-          alignment: Alignment.center,
-          children: children,
-        ),
-      ),
     );
   }
 }

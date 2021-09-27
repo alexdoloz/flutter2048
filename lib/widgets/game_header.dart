@@ -35,7 +35,10 @@ class GameHeader extends StatelessWidget {
                   return Column(
                     children: [
                       header!,
-                      if (status != GameState.notStarted) GameButton(
+                      if (
+                        status == GameState.inProgress || 
+                        status == GameState.wonInProgress
+                      ) GameButton(
                         title: "Restart game", 
                         onPressed: () {
                           _showAlertDialog(context);
@@ -49,12 +52,14 @@ class GameHeader extends StatelessWidget {
             Container(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisSize: MainAxisSize.max,
                 children: [
                   ValueListenableBuilder(
                     valueListenable: GameManager.shared.score,
                     builder: (_, score, __) =>  
                       ScoreWidget(scoreLabel: "Score", score: '$score'),
                   ),
+                  SizedBox(height: 10,),
                   ValueListenableBuilder(
                     valueListenable: GameManager.shared.bestScore,
                     builder: (_, bestScore, __) =>

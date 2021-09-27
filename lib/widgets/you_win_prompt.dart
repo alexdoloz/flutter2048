@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:p2048/logic/game_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:p2048/utils/colors.dart';
 import 'package:p2048/widgets/game_button.dart';
 
 class YouWinPrompt extends StatelessWidget {
@@ -9,7 +10,7 @@ class YouWinPrompt extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Color(0xaaeee4da),
+      color: GameColors.semiTransparentBackground,
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -17,30 +18,48 @@ class YouWinPrompt extends StatelessWidget {
           SizedBox(
             width: 200,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text("You win!\nYou can continue playing or start the new game",
+                Spacer(flex: 8,),
+                Text("👏", style: TextStyle(fontSize: 70),),
+                Spacer(flex: 3,),
+                Text("You win!",
                   textAlign: TextAlign.center,
                   style: GoogleFonts.roboto(
-                      textStyle: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.normal,
-                      ),
+                    textStyle: TextStyle(
+                      fontSize: 40,
+                      color: GameColors.darkForeground,
+                      fontWeight: FontWeight.w800,
                     ),
+                  ),
                 ),
+                Text(
+                  "You can continue playing or start the new game",
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.roboto(
+                    textStyle: TextStyle(
+                      fontSize: 25,
+                      color: GameColors.darkForeground,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                Spacer(flex: 20,),
                 GameButton(
                   title: "New game", 
                   onPressed: () {
                     GameManager.shared.startGame();
                   }
                 ),
+                Spacer(flex: 4,),
                 GameButton(
                   title: "Continue", 
                   onPressed: () {
                     GameManager.shared.continuePlaying();
                   }
                 ),
+                Spacer(flex: 20,),
               ],
             ),
           ),
