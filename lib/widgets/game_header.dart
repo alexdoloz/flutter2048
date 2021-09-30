@@ -56,14 +56,14 @@ class GameHeader extends StatelessWidget {
                 children: [
                   ValueListenableBuilder(
                     valueListenable: GameManager.shared.score,
-                    builder: (_, score, __) =>  
-                      ScoreWidget(scoreLabel: "Score", score: '$score'),
+                    builder: (_, int score, __) =>  
+                      ScoreWidget(scoreLabel: "Score", score: score),
                   ),
                   SizedBox(height: 10,),
                   ValueListenableBuilder(
                     valueListenable: GameManager.shared.bestScore,
-                    builder: (_, bestScore, __) =>
-                      ScoreWidget(scoreLabel: "Best", score: '$bestScore'),
+                    builder: (_, int bestScore, __) =>
+                      ScoreWidget(scoreLabel: "Best", score: bestScore),
                   ),
                 ],
               ),
