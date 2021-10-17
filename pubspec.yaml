@@ -23,10 +23,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.2
-  google_fonts: ^2.1.0
-  shared_preferences: ^2.0.0
-  assets_audio_player: ^3.0.3+6
+  cupertino_icons: any
+  google_fonts: any
+  shared_preferences: any
+  assets_audio_player: any
+  assets_audio_player_web: any
 
 dev_dependencies:
   flutter_test:

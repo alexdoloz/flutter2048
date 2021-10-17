@@ -1,4 +1,3 @@
-import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:p2048/widgets/centered_square.dart';
 import 'package:p2048/widgets/game_field_background.dart';
@@ -13,11 +12,14 @@ void main() {
   runApp(App());
 }
 
-var player = AssetsAudioPlayer();
-
 class App extends StatelessWidget {
    Widget _widgetForStatus(GameState status) {
     switch (status) {
+    case GameState.notLoaded: return CenteredSquare(
+      children: [
+        GameFieldBackground()
+      ]
+    );
     case GameState.notStarted: return CenteredSquare(
       key: ValueKey(0),
       children: [
@@ -92,7 +94,7 @@ class App extends StatelessWidget {
             );
           }
         ),
-        ),
+      ),
     );
   }
 }

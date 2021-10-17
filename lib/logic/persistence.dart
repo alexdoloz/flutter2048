@@ -1,7 +1,6 @@
 import 'package:p2048/logic/game_grid.dart';
 import 'package:p2048/logic/game_manager.dart';
 import 'package:p2048/logic/grid_point.dart';
-// import 'package:p2048/logic/tile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class Persistence {
@@ -25,16 +24,26 @@ class PersistenceService implements Persistence {
     var secondHalf = prefs.getInt('second_half');
     var bestScore = prefs.getInt('best_score') ?? 0;
     var score = prefs.getInt('score') ?? 0;
-    if (firstHalf == null || secondHalf == null) {
+    var isInconsistent = firstHalf == null || 
+      secondHalf == null ||
+      score == null ||
+      bestScore == null ||
+      status == null ||
+      status == GameState.notLoaded;
+    if (isInconsistent) {
       firstHalf = 0;
       secondHalf = 0;
       score = 0;
+      bestScore = 0;
+      status = GameState.notStarted;
     }
     var grid = GameGrid();
-    _split(grid, 0, 7, firstHalf);
-    _split(grid, 8, 15, secondHalf);
+    _split(grid, 0, 7, firstHalf!);
+    _split(grid, 8, 15, secondHalf!);
     callback(grid, status, score, bestScore);
   }
+
+
 
   @override
   save({
